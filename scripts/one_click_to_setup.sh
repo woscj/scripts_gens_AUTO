@@ -55,11 +55,6 @@ git clone git@github.com:simright/pyfem_sipesc.git &&
 git clone git@github.com:simright/pyworker.git &&
 git clone git@github.com:simright/viewgen.git
 
-# validate all libs are downloaded
-pywork_s=`ls | grep pyworker`
-if [[ -n pywork_s ]]; then
-    echo "pyworker had been downloaded"
-fi
 
 # add all libs into PYTHONPATH
 cd $gens_path
@@ -67,8 +62,8 @@ for i in `ls -F | grep '\/$'`
 do
     if [[ -d $i ]]; then
         cd $i
-        s=`ls | grep '^setup.py$'`
-        if [[ -n s ]]; then
+        s=`ls | grep 'setup.py'`
+        if [[ -n $s ]]; then
             python setup.py develop
         fi
 	cd ..

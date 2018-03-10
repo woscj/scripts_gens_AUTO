@@ -4,7 +4,7 @@ username=`whoami`
 
 ccx_path=/home/$username/work/ccx/ccx_2.13
 gens_path=/home/$username/work/gens_libs
-report_path="/home/$username/work/reports"
+report_path=/home/$username/work/reports
 
 # add system envs
 export PYTHONPATH=$gens_path/meshgen/py/dist/
