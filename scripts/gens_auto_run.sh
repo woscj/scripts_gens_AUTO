@@ -62,7 +62,7 @@ echo -e "\n"
 echo "==================== Be ready to run gens automation ===================="
 echo -e "\n"
 
-gens_list="caegen-node topgen-node convgen viewgen-node viewgen"
+gens_list="caegen-node topgen-node convgen viewgen-node viewgen simcmds"
 date=`date +%F`
 daily_path=$report_path/$date
 
@@ -75,14 +75,17 @@ do
     cd $gens_path/$i/tests
     echo "======================================================================"
     echo -e "\n"
-    py_file_name=`ls | grep -E '^test_(.*)\.py$'`
-    python $gens_path/$i/tests/$py_file_name 2>&1 | tee -a $daily_path/$i.txt
-    validate_str=`tail -1 $daily_path/$i.txt | grep OK`
-    if [[ -n $validate_str ]]; then
-    echo -e "Run $i Passed\n" >> $daily_path/status.txt
-    else
-    echo -e "Run $i Failed\n" >> $daily_path/status.txt 
-    fi
+#    py_file_name=`ls | grep -E '^test_(.*)\.py$'`
+    for j in `ls | grep -E '^test_(.*)\.py$'`
+    do
+        python $gens_path/$i/tests/$j 2>&1 | tee -a $daily_path/$i.txt
+        validate_str=`tail -1 $daily_path/$i.txt | grep OK`
+        if [[ -n $validate_str ]]; then
+            echo -e "Run $i Passed\n" >> $daily_path/status.txt
+        else
+            echo -e "Run $i Failed\n" >> $daily_path/status.txt
+        fi
+    done
     echo -e "\n"
     echo "======================================================================"
     echo -e "\n"
