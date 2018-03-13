@@ -75,11 +75,11 @@ do
     cd $gens_path/$i/tests
     echo "======================================================================"
     echo -e "\n"
-#    py_file_name=`ls | grep -E '^test_(.*)\.py$'`
+    # py_file_name=`ls | grep -E '^test_(.*)\.py$'`
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
         python $gens_path/$i/tests/$j 2>&1 | tee -a $daily_path/$i.txt
-        validate_str=`tail -1 $daily_path/$i.txt | grep OK`
+        validate_str=`cat $daily_path/$i.txt | grep OK`
         if [[ -n $validate_str ]]; then
             echo -e "Run $i Passed\n" >> $daily_path/status.txt
         else
