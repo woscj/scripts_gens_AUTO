@@ -23,7 +23,7 @@ def msg_html_format():
     body_msg = ''
     for line in res_str_list:
         if re.search('Failed', line):
-            body_msg += '<p><font color="red">%s</p>\n' % line
+            body_msg += '<p><font color="red">%s</font></p>\n' % line
         else:
             body_msg += '<p>%s</p>\n' % line
     head_msg = '''<h1>Gens testing on %s </h1>''' % today_date

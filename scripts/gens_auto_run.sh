@@ -81,9 +81,9 @@ do
         python $gens_path/$i/tests/$j 2>&1 | tee -a $daily_path/$i.txt
         validate_str=`cat $daily_path/$i.txt | grep OK`
         if [[ -n $validate_str ]]; then
-            echo -e "Run $i Passed\n" >> $daily_path/status.txt
+            echo -e "Run $i/$j Passed\n" >> $daily_path/status.txt
         else
-            echo -e "Run $i Failed\n" >> $daily_path/status.txt
+            echo -e "Run $i/$j Failed\n" >> $daily_path/status.txt
         fi
     done
     echo -e "\n"
