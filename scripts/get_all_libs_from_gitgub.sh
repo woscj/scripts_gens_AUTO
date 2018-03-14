@@ -52,6 +52,4 @@ git clone git@github.com:simright/unires_sipesc.git &&
 git clone git@github.com:simright/unires.git &&
 git clone git@github.com:simright/unires_calculix.git &&
 git clone git@github.com:simright/pyfem_sipesc.git &&
-git clone git@github.com:simright/pyworker.git &&
-git clone git@github.com:simright/viewgen.git
-
+git clone git@github.com:simright/pyworker.git
