@@ -62,7 +62,7 @@ echo -e "\n"
 echo "==================== Be ready to run gens automation ===================="
 echo -e "\n"
 
-gens_list="caegen-node topgen-node convgen viewgen-node viewgen simcmds"
+gens_list="caegen-node topgen-node convgen viewgen-node simcmds"
 date=`date +%F`
 daily_path=$report_path/$date
 
