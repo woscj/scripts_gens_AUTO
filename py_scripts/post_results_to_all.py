@@ -36,7 +36,11 @@ def _format_addr(s):
 
 from_addr = "jie.chen@simright.com"
 password = "cj_3460219"
-to_addr = ["shineyao0221@simright.com", "sunjingchao@simright.com", "zhangj@simright.com", "kang@simright.com"]
+to_addr = ["shineyao0221@simright.com",
+           "sunjingchao@simright.com",
+           "zhangj@simright.com",
+           "kang@simright.com",
+           "jie.chen@simright.com"]
 # to_addr = "jie.chen@simright.com"
 smtp_server = "smtp.mxhichina.com"
 
