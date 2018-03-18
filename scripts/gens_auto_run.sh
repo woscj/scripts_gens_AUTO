@@ -12,25 +12,15 @@ export LD_LIBRARY_PATH=$gens_path/meshgen/lib/linux64/3rdparty/:$gens_path/meshg
 export CALCULIX_CCX_EXE=$ccx_path
 
 
-cd $gens_path
+# add report path
+gens_list="caegen-node topgen-node convgen viewgen-node simcmds meshgen"
+date=`date +%F`
+daily_path=$report_path/$date
 
-# make sure the branch is on master
-# for i in `ls -F | grep '\/$'`
-# do
-#     if [[ -d $i ]];then
-#         cd $i
-#         echo "============== Checkout all branch back master ======================="
-#         status_s=`git status`
-#         is_on_master=`head -1 $status_s | grep "master"`
-#         if [[ -n $is_on_master ]];then
-#             cd ..
-#             continue
-#         else
-#             git checkout master
-#         fi
-#         cd $gens_path
-#     fi
-# done
+mkdir $daily_path
+
+
+cd $gens_path
 
 # update source code
 for i in `ls -F | grep '\/$'`
@@ -40,7 +30,8 @@ do
         git fetch
         diff_s=`git diff master origin/master`
         if [[ -n $diff_s ]]; then
-            echo "====================== $i is being updated ==========================="
+            echo "====================== $i is being updated ===========================" >> $daily_path/update_infos.txt
+            echo $diff_s >> $daily_path/update_infos.txt
             git merge
             s=`echo $i | grep meshgen`
             if [[ -n $s ]]
@@ -62,24 +53,24 @@ echo -e "\n"
 echo "==================== Be ready to run gens automation ===================="
 echo -e "\n"
 
-gens_list="caegen-node topgen-node convgen viewgen-node simcmds"
-date=`date +%F`
-daily_path=$report_path/$date
-
-mkdir $daily_path
 
 for i in $gens_list
 do
     echo "RUN $i"
-    touch $daily_path/$i.txt
-    cd $gens_path/$i/tests
+    if [ $i == "meshgen" ]; then
+        test_path=$gens_path/$i/py/tests
+        cd $test_path
+    else
+        test_path=$gens_path/$i/tests
+        cd $test_path
+    fi
     echo "======================================================================"
     echo -e "\n"
-    # py_file_name=`ls | grep -E '^test_(.*)\.py$'`
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
-        python $gens_path/$i/tests/$j 2>&1 | tee -a $daily_path/$i.txt
-        validate_str=`cat $daily_path/$i.txt | grep OK`
+        echo "==================== Be running $i $j ========================="
+        python $test_path/$j 2>&1 | tee -a $daily_path/"$i--$j".txt
+        validate_str=`cat $daily_path/"$i--$j".txt | grep OK`
         if [[ -n $validate_str ]]; then
             echo -e "Run $i/$j Passed\n" >> $daily_path/status.txt
         else
