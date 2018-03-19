@@ -2,6 +2,8 @@
 
 username=`whoami`
 
+python_path=/home/woscj607/.virtualenvs/pydev-2.7.13/bin/python
+
 ccx_path=/home/$username/work/ccx/ccx_2.13
 gens_path=/home/$username/work/gens_libs
 report_path=/home/$username/work/reports
@@ -13,12 +15,16 @@ export CALCULIX_CCX_EXE=$ccx_path
 
 
 # add report path
-gens_list="caegen-node topgen-node convgen viewgen-node simcmds meshgen"
+gens_list="caegen-node topgen-node convgen viewgen-node femily unicad simcmds meshgen"
 date=`date +%F`
 daily_path=$report_path/$date
 
-mkdir $daily_path
-
+if [ ! -d $daily_path ];then
+    mkdir $daily_path
+else
+    rm -rf $daily_path
+    mkdir $daily_path
+fi
 
 cd $gens_path
 
@@ -69,7 +75,7 @@ do
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
         echo "==================== Be running $i $j ========================="
-        /home/jiechen/.pyenv/shims/python $test_path/$j 2>&1 | tee -a $daily_path/"$i--$j".txt
+        $python_path $test_path/$j 2>&1 | tee -a $daily_path/"$i--$j".txt
         validate_str=`cat $daily_path/"$i--$j".txt | grep OK`
         if [[ -n $validate_str ]]; then
             echo -e "Run $i/$j Passed\n" >> $daily_path/status.txt
