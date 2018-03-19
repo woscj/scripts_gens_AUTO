@@ -69,7 +69,7 @@ do
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
         echo "==================== Be running $i $j ========================="
-        python $test_path/$j 2>&1 | tee -a $daily_path/"$i--$j".txt
+        /home/jiechen/.pyenv/shims/python $test_path/$j 2>&1 | tee -a $daily_path/"$i--$j".txt
         validate_str=`cat $daily_path/"$i--$j".txt | grep OK`
         if [[ -n $validate_str ]]; then
             echo -e "Run $i/$j Passed\n" >> $daily_path/status.txt
