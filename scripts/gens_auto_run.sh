@@ -65,13 +65,17 @@ cd $gens_path
 for i in `ls -F | grep '\/$'`
 do
 #    echo "RUN $i"
-    if [ $i == "meshgen/" ]; then
+    gens_dir=${i%/*}
+    if [ $gens_dir == "meshgen" ]; then
         echo "RUN $i"
-        test_path=$gens_path/meshgen/py/tests
+        test_path=$gens_path/$gens_dir/py/tests
         cd $test_path
     else
-        if [ !d "$gens_path/$i/tests" ];then
-            test_path=$gens_path/$i/tests
+	echo "RUN $i"
+        if [ ! -d "$gens_path/$gens_dir/tests" ];then
+            continue
+	else
+	    test_path=$gens_path/$gens_dir/tests
         fi
         cd $test_path
     fi
@@ -80,12 +84,12 @@ do
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
         echo "==================== Be running $i $j ========================="
-        $python_path $test_path/$j 2>&1 | tee -a $daily_path/"$i--$j".txt
-        validate_str=`cat $daily_path/"$i--$j".txt | grep OK`
+        $python_path $test_path/$j 2>&1 | tee -a $daily_path/"$gens_dir--$j".txt
+        validate_str=`cat $daily_path/"$gens_dir--$j".txt | grep OK`
         if [[ -n $validate_str ]]; then
-            echo -e "Run $i/$j Passed\n" >> $daily_path/status.txt
+            echo -e "Run $gens_dir/$j Passed\n" >> $daily_path/status.txt
         else
-            echo -e "Run $i/$j Failed\n" >> $daily_path/status.txt
+            echo -e "Run $gens_dir/$j Failed\n" >> $daily_path/status.txt
         fi
     done
     echo -e "\n"
