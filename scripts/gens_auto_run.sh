@@ -59,15 +59,20 @@ echo -e "\n"
 echo "==================== Be ready to run gens automation ===================="
 echo -e "\n"
 
+cd $gens_path
 
-for i in $gens_list
+#for i in $gens_list
+for i in `ls -F | grep '\/$'`
 do
-    echo "RUN $i"
-    if [ $i == "meshgen" ]; then
-        test_path=$gens_path/$i/py/tests
+#    echo "RUN $i"
+    if [ $i == "meshgen/" ]; then
+        echo "RUN $i"
+        test_path=$gens_path/meshgen/py/tests
         cd $test_path
     else
-        test_path=$gens_path/$i/tests
+        if [ !d "$gens_path/$i/tests" ];then
+            test_path=$gens_path/$i/tests
+        fi
         cd $test_path
     fi
     echo "======================================================================"
