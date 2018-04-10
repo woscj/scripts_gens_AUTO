@@ -42,10 +42,17 @@ do
             s=`echo $i | grep meshgen`
             if [[ -n $s ]]
             then
+		git submodule init
                 git submodule update
                 cd py/dist/pymesher
                 $python_path mgmesher_build.py
             fi
+	    m=`git submodule`
+	    if [[ -n $m ]]
+	    then
+		git submodule init
+		git submodule update
+	    fi
             echo -e "\n"
             echo "======================================================================"
             echo -e "\n"
