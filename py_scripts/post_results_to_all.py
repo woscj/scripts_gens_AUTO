@@ -29,8 +29,10 @@ def msg_content_format():
     res_str_list = res_str.split('\n\n')
     body_msg = ''
     attach_file_list = []
+    count = 0
     for line in res_str_list:
         if re.search('Failed', line):
+	    count += 1
             body_msg += '<p><font color="red">%s</font></p>\n' % line
             line_list = re.split('/|\s', line)
             file_path = line_list[1] + "--" + line_list[2] + ".txt"
@@ -41,7 +43,7 @@ def msg_content_format():
     head_msg = '''<h1>Gens testing on %s </h1>''' % today_date
     tail_msg = '''\n<h2>Please checkout attached files to know why some unittests fail</h2>'''
     mail_msg = head_msg + body_msg + tail_msg
-    return mail_msg, attach_file_list
+    return mail_msg, attach_file_list, count
 
 
 def _format_addr(s):
@@ -50,15 +52,16 @@ def _format_addr(s):
 
 from_addr = "jie.chen@simright.com"
 password = "cj_3460219"
-to_addr = ["shineyao0221@simright.com",
-           "sunjingchao@simright.com",
-           "zhangj@simright.com",
+to_addr = ["zhangj@simright.com",
            "kang@simright.com",
-           "jie.chen@simright.com"]
+           "julin@simright.com",
+           "jie.chen@simright.com",
+           "hsn@simright.com"]
 # to_addr = "jie.chen@simright.com"
 smtp_server = "smtp.mxhichina.com"
 
 text_content = msg_content_format()[0]
+count = msg_content_format()[2]
 msg = MIMEMultipart()
 
 msg.attach(MIMEText(text_content, 'html', 'utf-8'))
@@ -69,7 +72,11 @@ if isinstance(to_addr, list):
     msg['To'] = all_addr
 else:
     msg['To'] = to_addr
-msg['Subject'] = Header("Results of Gens Unittest")
+
+if count == 0:
+    msg['Subject'] = Header("Results of Gens Unittest - all passed")
+else:
+    msg['Subject'] = Header("Results of Gens Unittest - %d failed" % count)
 
 attach_file = msg_content_format()[1]
 if len(attach_file) != 0:

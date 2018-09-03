@@ -32,6 +32,7 @@ cd $gens_path
 for i in `ls -F | grep '\/$'`
 do
     if [[ -d $i ]];then
+    # if false; then
         cd $i
         git fetch
         diff_s=`git diff master origin/master`
@@ -42,8 +43,13 @@ do
             s=`echo $i | grep meshgen`
             if [[ -n $s ]]
             then
+		#git pull
+		#git checkout simright
 		git submodule init
                 git submodule update
+		#cd lib/linux64/simright
+		#git pull
+		#git checkout brepContact
                 cd py/dist/pymesher
                 $python_path mgmesher_build.py
             fi
