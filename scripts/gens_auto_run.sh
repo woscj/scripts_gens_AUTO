@@ -32,6 +32,7 @@ cd $gens_path
 for i in `ls -F | grep '\/$'`
 do
     if [[ -d $i ]];then
+    # if false; then
         cd $i
         git fetch
         diff_s=`git diff master origin/master`
