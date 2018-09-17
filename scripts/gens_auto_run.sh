@@ -2,7 +2,7 @@
 
 username=`whoami`
 
-python_path=/home/jiechen/.pyenv/shims/python
+python_path=/home/$username/.pyenv/shims/python
 
 ccx_path=/home/$username/work/ccx/ccx_2.13
 gens_path=/home/$username/work/gens_libs
@@ -15,7 +15,7 @@ export CALCULIX_CCX_EXE=$ccx_path
 
 
 # add report path
-gens_list="caegen-node topgen-node convgen viewgen-node femily unicad simcmds meshgen"
+# gens_list="caegen-node topgen-node convgen viewgen-node femily unicad simcmds meshgen"
 date=`date +%F`
 daily_path=$report_path/$date
 
@@ -38,21 +38,26 @@ do
         if [[ -n $diff_s ]]; then
             echo "====================== $i is being updated ===========================" >> $daily_path/update_infos.txt
             echo $diff_s >> $daily_path/update_infos.txt
-            git merge
+            mergeStatus=`git merge | grep Aborting`
+            if [[ -n $mergeStatus ]];then
+                rm -rf $i
+                cd ..
+                git clone git@github.com:simright/$i
+            fi
             s=`echo $i | grep meshgen`
             if [[ -n $s ]]
             then
-		git submodule init
+		        git submodule init
                 git submodule update
                 cd py/dist/pymesher
                 $python_path mgmesher_build.py
             fi
-	    m=`git submodule`
-	    if [[ -n $m ]]
-	    then
-		git submodule init
-		git submodule update
-	    fi
+            m=`git submodule`
+            if [[ -n $m ]]
+            then
+                git submodule init
+                git submodule update
+            fi
             echo -e "\n"
             echo "======================================================================"
             echo -e "\n"
@@ -91,7 +96,7 @@ do
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
         echo "==================== Be running $i $j ========================="
-        $python_path $test_path/$j 2>&1 | tee -a $daily_path/"$gens_dir--$j".txt
+        python $test_path/$j 2>&1 | tee -a $daily_path/"$gens_dir--$j".txt
         validate_str=`cat $daily_path/"$gens_dir--$j".txt | grep OK`
         if [[ -n $validate_str ]]; then
             echo -e "Run $gens_dir/$j Passed\n" >> $daily_path/status.txt
