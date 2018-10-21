@@ -32,30 +32,29 @@ cd $gens_path
 for i in `ls -F | grep '\/$'`
 do
     if [[ -d $i ]];then
-    # if false; then
         cd $i
+        git stash
         git fetch
-        diff_s=`git diff master origin/master`
-        if [[ -n $diff_s ]]; then
+        diff_master=`git diff master origin/master`
+        if [[ -n $diff_master ]]; then
             echo "====================== $i is being updated ===========================" >> $daily_path/update_infos.txt
             echo $diff_s >> $daily_path/update_infos.txt
             git merge
-            s=`echo $i | grep meshgen`
-            if [[ -n $s ]]
-            then
-		git submodule init
-                git submodule update
-                cd py/dist/pymesher
-                $python_path mgmesher_build.py
-            fi
-            m=`git submodule`
-            if [[ -n $m ]]
+            echo "====================== $i Merge Done ================================="
+            if_exist_submodul=`git submodule`
+            if [[ -n $if_exist_submodule ]]
             then
                 git submodule init
                 git submodule update
             fi
+            is_meshgen=`echo $i | grep meshgen`
+            if [[ -n $is_meshgen ]]
+            then
+                cd py/dist/pymesher
+                $python_path mgmesher_build.py
+            fi
             echo -e "\n"
-            echo "======================================================================"
+            echo "====================== $i update completed =========================="
             echo -e "\n"
         fi
         cd $gens_path
@@ -69,40 +68,30 @@ echo -e "\n"
 
 cd $gens_path
 
-#for i in $gens_list
 for i in `ls -F | grep '\/$'`
 do
-#    echo "RUN $i"
-    gens_dir=${i%/*}
-    if [ $gens_dir == "meshgen" ]; then
-        echo "RUN $i"
-        test_path=$gens_path/$gens_dir/py/tests
-        cd $test_path
-    else
-	echo "RUN $i"
-        if [ ! -d "$gens_path/$gens_dir/tests" ];then
-            continue
-	else
-	    test_path=$gens_path/$gens_dir/tests
-        fi
-        cd $test_path
-    fi
-    echo "======================================================================"
-    echo -e "\n"
-    for j in `ls | grep -E '^test_(.*)\.py$'`
+    if [[ -d $i ]]; then
+    cd $i
+    echo $i
+    for j in `find $gens_path/$i -name test_*.py`
     do
-        echo "==================== Be running $i $j ========================="
-        $python_path $test_path/$j 2>&1 | tee -a $daily_path/"$gens_dir--$j".txt
-        validate_str=`cat $daily_path/"$gens_dir--$j".txt | grep OK`
-        if [[ -n $validate_str ]]; then
-            echo -e "Run $gens_dir/$j Passed\n" >> $daily_path/status.txt
-        else
-            echo -e "Run $gens_dir/$j Failed\n" >> $daily_path/status.txt
+        if [[ -f $j ]]; then
+            fn=$(basename $j .py)
+            test_dir=$(dirname $j)
+            cd $test_dir
+            $python_path "$test_dir/$fn.py" 2>&1 | tee -a $daily_path/$fn.txt
+            validate_str=`cat $daily_path/$fn.txt | grep OK`
+            if [[ -n $validate_str ]]; then
+                echo -e "Run $fn Passed\n" >> $daily_path/status.txt
+            else
+                echo -e "Run $fn Failed\n" >> $daily_path/status.txt
+            fi
         fi
     done
+    cd $gens_path
     echo -e "\n"
     echo "======================================================================"
     echo -e "\n"
+    fi
 done
-
 

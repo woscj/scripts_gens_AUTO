@@ -34,11 +34,11 @@ do
         if [[ -f $j ]]; then
             echo $j
             fn=$(basename $j .py)
-            test_file=$(dirname $j)
-            echo $test_file
-            cd $test_file
+            test_dir=$(dirname $j)
+            echo $test_dir
+            cd $test_dir
             echo "$fn.py"
-            $python_path "$fn.py" 2>&1 | tee -a $daily_path/$fn.txt
+            $python_path "$test_dir/$fn.py" 2>&1 | tee -a $daily_path/$fn.txt
             validate_str=`cat $daily_path/$fn.txt | grep OK`
             if [[ -n $validate_str ]]; then
                 echo -e "Run $j Passed\n" >> $daily_path/status.txt
@@ -47,6 +47,7 @@ do
             fi
         fi
     done
+    cd $gens_path
     echo -e "\n"
     echo "======================================================================"
     echo -e "\n"
