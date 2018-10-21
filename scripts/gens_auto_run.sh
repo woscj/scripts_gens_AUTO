@@ -39,16 +39,11 @@ do
         if [[ -n $diff_s ]]; then
             echo "====================== $i is being updated ===========================" >> $daily_path/update_infos.txt
             echo $diff_s >> $daily_path/update_infos.txt
-            mergeStatus=`git merge | grep Aborting`
-            if [[ -n $mergeStatus ]];then
-                rm -rf $i
-                cd ..
-                git clone git@github.com:simright/$i
-            fi
+            git merge
             s=`echo $i | grep meshgen`
             if [[ -n $s ]]
             then
-		        git submodule init
+		git submodule init
                 git submodule update
                 cd py/dist/pymesher
                 $python_path mgmesher_build.py
@@ -97,7 +92,7 @@ do
     for j in `ls | grep -E '^test_(.*)\.py$'`
     do
         echo "==================== Be running $i $j ========================="
-        python $test_path/$j 2>&1 | tee -a $daily_path/"$gens_dir--$j".txt
+        $python_path $test_path/$j 2>&1 | tee -a $daily_path/"$gens_dir--$j".txt
         validate_str=`cat $daily_path/"$gens_dir--$j".txt | grep OK`
         if [[ -n $validate_str ]]; then
             echo -e "Run $gens_dir/$j Passed\n" >> $daily_path/status.txt
