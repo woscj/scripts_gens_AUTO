@@ -9,7 +9,7 @@ do
         cd $i
         s=`ls | grep 'setup.py'`
         if [[ -n s ]]; then
-            python setup.py develop
+            sudo python setup.py develop
         fi
     cd ..
     fi

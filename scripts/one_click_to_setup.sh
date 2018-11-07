@@ -64,15 +64,15 @@ do
         cd $i
         s=`ls | grep 'setup.py'`
         if [[ -n $s ]]; then
-            python setup.py develop
+           sudo python setup.py develop
         fi
 	cd ..
     fi
 done
 
 # download public python libs
-apt-get install python-pip
-apt install libgfortran3
+sudo apt-get install python-pip
+sudo apt install libgfortran3
 
 pip install --upgrade pip
 pip install enum34 fortranformat msgpack-python py_expression_eval contextlib2

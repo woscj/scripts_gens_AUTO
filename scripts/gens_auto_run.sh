@@ -41,7 +41,7 @@ do
             echo $diff_s >> $daily_path/update_infos.txt
             git merge
             echo "====================== $i Merge Done ================================="
-            if_exist_submodul=`git submodule`
+            if_exist_submodule=`git submodule`
             if [[ -n $if_exist_submodule ]]
             then
                 git submodule init
