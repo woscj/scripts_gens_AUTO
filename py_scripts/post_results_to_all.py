@@ -34,8 +34,8 @@ def msg_content_format():
         if re.search('Failed', line):
 	    count += 1
             body_msg += '<p><font color="red">%s</font></p>\n' % line
-            line_list = re.split('/|\s', line)
-            file_path = line_list[1] + "--" + line_list[2] + ".txt"
+            line_list = re.split('\s', line)
+            file_path = line_list[2] + ".txt"
             total_file_path = os.path.join(get_report_dir(), file_path)
             attach_file_list.append(total_file_path)
         else:
@@ -57,7 +57,7 @@ to_addr = ["zhangj@simright.com",
            "julin@simright.com",
            "jie.chen@simright.com",
            "hsn@simright.com"]
-# to_addr = "jie.chen@simright.com"
+#to_addr = "jie.chen@simright.com"
 smtp_server = "smtp.mxhichina.com"
 
 text_content = msg_content_format()[0]

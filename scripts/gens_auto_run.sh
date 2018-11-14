@@ -4,7 +4,7 @@ username=`whoami`
 
 python_path=/home/$username/.pyenv/shims/python
 
-ccx_path=/home/$username/work/ccx/ccx_2.13
+ccx_path=/home/$username/work/ccx/ccx_2.14
 gens_path=/home/$username/work/gens_libs
 report_path=/home/$username/work/reports
 
@@ -34,7 +34,8 @@ do
     if [[ -d $i ]];then
         cd $i
         git stash
-        git fetch
+	git checkout master
+        git fetch origin master
         diff_master=`git diff master origin/master`
         if [[ -n $diff_master ]]; then
             echo "====================== $i is being updated ===========================" >> $daily_path/update_infos.txt
@@ -82,9 +83,9 @@ do
             $python_path "$test_dir/$fn.py" 2>&1 | tee -a $daily_path/$fn.txt
             validate_str=`cat $daily_path/$fn.txt | grep OK`
             if [[ -n $validate_str ]]; then
-                echo -e "Run $fn Passed\n" >> $daily_path/status.txt
+                echo -e "Run $i $fn Passed\n" >> $daily_path/status.txt
             else
-                echo -e "Run $fn Failed\n" >> $daily_path/status.txt
+                echo -e "Run $i $fn Failed\n" >> $daily_path/status.txt
             fi
         fi
     done
