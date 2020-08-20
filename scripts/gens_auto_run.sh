@@ -2,7 +2,8 @@
 
 username=`whoami`
 
-python_path=/home/$username/.pyenv/shims/python
+python_path=/home/$username/.pyenv/versions/simright_cpy3.8.0/bin/python
+pypy_path=/home/$username/.pyenv/versions/simright_pypy3.6-7.2.0/bin/python
 
 ccx_path=/home/$username/work/ccx/ccx_2.14
 gens_path=/home/$username/work/gens_libs
@@ -34,28 +35,31 @@ do
     if [[ -d $i ]];then
         cd $i
         git stash
-	git checkout master
+        git checkout master
         git fetch origin master
         diff_master=`git diff master origin/master`
         if [[ -n $diff_master ]]; then
-            echo "====================== $i is being updated ===========================" >> $daily_path/update_infos.txt
+            echo "====================== $i is being updated =======================" >> $daily_path/update_infos.txt
             echo $diff_s >> $daily_path/update_infos.txt
             git merge
-            echo "====================== $i Merge Done ================================="
+            echo "====================== $i Merge Done ============================="
+            # check submodule
             if_exist_submodule=`git submodule`
             if [[ -n $if_exist_submodule ]]
             then
                 git submodule init
                 git submodule update
             fi
+            # build mgmesher
             is_meshgen=`echo $i | grep meshgen`
             if [[ -n $is_meshgen ]]
             then
                 cd py/dist/pymesher
                 $python_path mgmesher_build.py
+                $pypy_path mgmesher_build.py
             fi
             echo -e "\n"
-            echo "====================== $i update completed =========================="
+            echo "====================== $i update completed ======================"
             echo -e "\n"
         fi
         cd $gens_path
@@ -64,7 +68,7 @@ done
 
 echo "==================== All code are up to date!!! ========================="
 echo -e "\n"
-echo "==================== Be ready to run gens automation ===================="
+echo "==================== Ready to run gens automation ======================="
 echo -e "\n"
 
 cd $gens_path
@@ -74,13 +78,21 @@ do
     if [[ -d $i ]]; then
     cd $i
     echo $i
+    is_pyfem_aster=`echo $i | grep pyfem_aster`
+
     for j in `find $gens_path/$i -name test_*.py`
     do
         if [[ -f $j ]]; then
             fn=$(basename $j .py)
             test_dir=$(dirname $j)
             cd $test_dir
-            $python_path "$test_dir/$fn.py" 2>&1 | tee -a $daily_path/$fn.txt
+            if [[ -n $is_pyfem_aster ]]
+            then
+                interpreter=$python_path
+            else
+                interpreter=$pypy_path
+            fi
+            $interpreter "$test_dir/$fn.py" 2>&1 | tee -a $daily_path/$fn.txt
             validate_str=`cat $daily_path/$fn.txt | grep OK`
             if [[ -n $validate_str ]]; then
                 echo -e "Run $i $fn Passed\n" >> $daily_path/status.txt
